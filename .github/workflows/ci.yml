@@ -41,7 +41,10 @@ jobs:
           done
 
       - name: 🧪 Run tests
-        run: go test ./...
+        run: |
+          for dir in ci-status fix-notifier label-pr-issue release-notes unreleased-commits versions-dropdown; do
+            go test ./${dir}/...
+          done
 
   check-spell:
     name: 📝 Check spelling

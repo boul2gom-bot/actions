@@ -1,0 +1,39 @@
+name: "🏷️ Label issues and PRs"
+description: "Automatically analyzes and applies labels to issues and pull requests based on title, branch, files, and commit conventions."
+author: "boul2gom"
+
+branding:
+  icon: tag
+  color: orange
+
+inputs:
+  token:
+    description: "GitHub token with issues:write and pull-requests:write permissions"
+    required: true
+  path_mappings:
+    description: |
+      JSON mapping of file path prefixes to label arrays, e.g.:
+      {"src/cache/": ["cache"], "crates/media-seek/": ["media-seek"]}
+    required: false
+    default: "{}"
+  label_definitions:
+    description: |
+      JSON map of custom label names to their color and description, e.g.:
+      {"cache": {"color": "bfd4f2", "description": "Related to the cache layer"}}
+      Labels not listed here and not in the built-in set default to color "ededed".
+    required: false
+    default: "{}"
+
+outputs:
+  is_new:
+    description: "'true' if this is the author's first contribution"
+  is_pr:
+    description: "'true' if the event is a pull request"
+  issue_number:
+    description: "PR or issue number"
+  labels_applied:
+    description: "JSON array of applied label names"
+
+runs:
+  using: docker
+  image: docker://ghcr.io/boul2gom/actions/label-pr-issue:latest

@@ -1,0 +1,46 @@
+name: "🤖 Update version dropdown"
+description: "Updates the version dropdown options in a GitHub issue template after a new release."
+author: "boul2gom"
+
+branding:
+  icon: refresh-cw
+  color: gray-dark
+
+inputs:
+  token:
+    description: "GitHub token with contents:write permission"
+    required: true
+  gpg_key:
+    description: "GPG private key for signing the commit"
+    required: true
+  gpg_passphrase:
+    description: "GPG key passphrase"
+    required: true
+  file_path:
+    description: "Path to the bug report YAML template"
+    required: false
+    default: ".github/ISSUE_TEMPLATE/bug_report.yml"
+  dropdown_id:
+    description: "ID of the dropdown field to update in the YAML"
+    required: false
+    default: "crate_version"
+  tag_pattern:
+    description: "Regex to filter relevant releases by tag name"
+    required: false
+    default: "^v\\d+\\.\\d+\\.\\d+$"
+  commit_branch:
+    description: "Branch to commit the updated file to"
+    required: false
+    default: "develop"
+  committer_name:
+    description: "Git committer name"
+    required: false
+    default: "boul2gom-bot"
+  committer_email:
+    description: "Git committer email"
+    required: false
+    default: "actions-bot@boul2gom.com"
+
+runs:
+  using: docker
+  image: docker://ghcr.io/boul2gom/actions/versions-dropdown:latest

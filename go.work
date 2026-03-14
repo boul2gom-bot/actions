@@ -1,0 +1,10 @@
+go 1.26.1
+
+use (
+	./ci-status
+	./fix-notifier
+	./label-pr-issue
+	./release-notes
+	./unreleased-commits
+	./versions-dropdown
+)

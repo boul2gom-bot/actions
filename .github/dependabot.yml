@@ -1,0 +1,106 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "00:00"
+      timezone: "Europe/Paris"
+    reviewers:
+      - "boul2gom"
+    assignees:
+      - "boul2gom"
+    commit-message:
+      prefix: "🔌 [Github Actions] "
+    target-branch: "develop"
+    rebase-strategy: "auto"
+
+  - package-ecosystem: "gomod"
+    directory: "/ci-status"
+    schedule:
+      interval: "daily"
+      time: "00:00"
+      timezone: "Europe/Paris"
+    reviewers:
+      - "boul2gom"
+    assignees:
+      - "boul2gom"
+    commit-message:
+      prefix: "📦 [Go Modules] "
+    target-branch: "develop"
+    rebase-strategy: "auto"
+
+  - package-ecosystem: "gomod"
+    directory: "/fix-notifier"
+    schedule:
+      interval: "daily"
+      time: "00:00"
+      timezone: "Europe/Paris"
+    reviewers:
+      - "boul2gom"
+    assignees:
+      - "boul2gom"
+    commit-message:
+      prefix: "📦 [Go Modules] "
+    target-branch: "develop"
+    rebase-strategy: "auto"
+
+  - package-ecosystem: "gomod"
+    directory: "/label-pr-issue"
+    schedule:
+      interval: "daily"
+      time: "00:00"
+      timezone: "Europe/Paris"
+    reviewers:
+      - "boul2gom"
+    assignees:
+      - "boul2gom"
+    commit-message:
+      prefix: "📦 [Go Modules] "
+    target-branch: "develop"
+    rebase-strategy: "auto"
+
+  - package-ecosystem: "gomod"
+    directory: "/release-notes"
+    schedule:
+      interval: "daily"
+      time: "00:00"
+      timezone: "Europe/Paris"
+    reviewers:
+      - "boul2gom"
+    assignees:
+      - "boul2gom"
+    commit-message:
+      prefix: "📦 [Go Modules] "
+    target-branch: "develop"
+    rebase-strategy: "auto"
+
+  - package-ecosystem: "gomod"
+    directory: "/unreleased-commits"
+    schedule:
+      interval: "daily"
+      time: "00:00"
+      timezone: "Europe/Paris"
+    reviewers:
+      - "boul2gom"
+    assignees:
+      - "boul2gom"
+    commit-message:
+      prefix: "📦 [Go Modules] "
+    target-branch: "develop"
+    rebase-strategy: "auto"
+
+  - package-ecosystem: "gomod"
+    directory: "/versions-dropdown"
+    schedule:
+      interval: "daily"
+      time: "00:00"
+      timezone: "Europe/Paris"
+    reviewers:
+      - "boul2gom"
+    assignees:
+      - "boul2gom"
+    commit-message:
+      prefix: "📦 [Go Modules] "
+    target-branch: "develop"
+    rebase-strategy: "auto"

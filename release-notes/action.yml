@@ -1,0 +1,33 @@
+name: "📝 Generate release notes"
+description: "Generates categorized Markdown release notes from commits since the previous tag."
+author: "boul2gom"
+
+branding:
+  icon: file-text
+  color: blue
+
+inputs:
+  token:
+    description: "GitHub token with contents:read permission"
+    required: true
+  version:
+    description: "New version being released (e.g. 2.7.0)"
+    required: true
+  sub_projects:
+    description: |
+      Newline-separated list of name:path_prefix pairs for sub-projects.
+      Commits whose changed files all fall under one prefix get their own
+      section in the release notes instead of appearing in the main section.
+      Example:
+        media-seek:crates/media-seek/
+        other-crate:crates/other/
+    required: false
+    default: ""
+
+outputs:
+  release_notes:
+    description: "Generated release notes in Markdown"
+
+runs:
+  using: docker
+  image: docker://ghcr.io/boul2gom/actions/release-notes:latest

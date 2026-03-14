@@ -1,0 +1,20 @@
+name: "🐛 Notify fixed issues"
+description: "Parses pushed commit messages for issue references and posts a comment + closes the matched issues."
+author: "boul2gom"
+
+branding:
+  icon: alert-circle
+  color: red
+
+inputs:
+  token:
+    description: "GitHub token with issues:write permission"
+    required: true
+  commit_pattern:
+    description: "Regex to extract issue numbers from commit messages"
+    required: false
+    default: "\\(to solve #(\\d+)\\)"
+
+runs:
+  using: docker
+  image: docker://ghcr.io/boul2gom/actions/fix-notifier:latest

@@ -1,0 +1,43 @@
+name: "✅ Check unreleased commits"
+description: "Detects unreleased commits since the last tag, classified between the main project and any number of sub-projects."
+author: "boul2gom"
+
+branding:
+  icon: git-commit
+  color: blue
+
+inputs:
+  token:
+    description: "GitHub token with contents:read permission"
+    required: true
+  force_release:
+    description: "Force a release even if no unreleased commits are found"
+    required: false
+    default: "false"
+  sub_projects:
+    description: |
+      Newline-separated list of name:path_prefix pairs for sub-projects.
+      Commits are attributed to a sub-project when ALL their changed files
+      fall under the corresponding prefix. Commits touching multiple areas
+      are attributed to the main project.
+      Example:
+        media-seek:crates/media-seek/
+        other-crate:crates/other/
+    required: false
+    default: ""
+  exclude_patterns:
+    description: "Comma-separated commit message patterns to exclude"
+    required: false
+    default: "[Github Actions],[skip ci]"
+
+outputs:
+  one_has:
+    description: "'true' if at least one project has unreleased updates"
+  main_has:
+    description: "'true' if the main project has unreleased commits"
+  sub_results:
+    description: "JSON map of sub-project name to 'true'/'false' (e.g. {\"media-seek\":\"true\"})"
+
+runs:
+  using: docker
+  image: docker://ghcr.io/boul2gom/actions/unreleased-commits:latest

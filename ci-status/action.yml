@@ -1,0 +1,28 @@
+name: "✅ Check CI status"
+description: "Returns true if the last run of a given workflow on a given branch succeeded."
+author: "boul2gom"
+
+branding:
+  icon: check-circle
+  color: green
+
+inputs:
+  token:
+    description: "GitHub token with actions:read permission"
+    required: true
+  workflow_id:
+    description: "Workflow filename to check (e.g. ci-dev.yml)"
+    required: false
+    default: "ci-dev.yml"
+  branch:
+    description: "Branch to check the last run on"
+    required: false
+    default: "develop"
+
+outputs:
+  ci_success:
+    description: "'true' if the last run concluded with success"
+
+runs:
+  using: docker
+  image: docker://ghcr.io/boul2gom/actions/ci-status:latest

@@ -35,7 +35,10 @@ jobs:
           cache-dependency-path: "**/go.sum"
 
       - name: 🔍 Go vet
-        run: go vet ./...
+        run: |
+          for dir in ci-status fix-notifier label-pr-issue release-notes unreleased-commits versions-dropdown; do
+            go vet ./${dir}/...
+          done
 
       - name: 🧪 Run tests
         run: go test ./...

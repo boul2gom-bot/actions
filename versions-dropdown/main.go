@@ -93,7 +93,7 @@ func main() {
 		a.Fatalf("Failed to import GPG key: %v", err)
 	}
 
-	if err := configure_git(work_dir, committer_name, committer_email, key_id); err != nil {
+	if err := configure_git(work_dir, committer_name, committer_email, key_id, gpg_passphrase); err != nil {
 		a.Fatalf("Failed to configure git: %v", err)
 	}
 
@@ -228,13 +228,6 @@ func import_gpg_key(dir, gpg_key, passphrase string) (string, error) {
 		return "", fmt.Errorf("could not find fingerprint in gpg output")
 	}
 
-	// Preset the passphrase in the gpg-agent so git commit -S doesn't prompt.
-	preset_cmd := exec.Command("gpg-connect-agent", "--quiet",
-		fmt.Sprintf("PRESET_PASSPHRASE %s -1 %s", key_id, passphrase),
-		"/bye")
-	preset_cmd.Dir = dir
-	_ = preset_cmd.Run() // best-effort; commit -S will fall back to loopback if this fails
-
 	return key_id, nil
 }
 
@@ -250,13 +243,19 @@ func parse_gpg_fingerprint(out string) string {
 }
 
 // configure_git sets user identity and GPG signing in the work directory.
-func configure_git(dir, name, email, key_id string) error {
+func configure_git(dir, name, email, key_id, passphrase string) error {
+	wrapper_script := filepath.Join(dir, "gpg-wrapper.sh")
+	wrapper_content := "#!/bin/sh\nexec gpg --batch --pinentry-mode loopback --passphrase \"$GPG_PASSPHRASE\" \"$@\"\n"
+	if err := os.WriteFile(wrapper_script, []byte(wrapper_content), 0o755); err != nil {
+		return fmt.Errorf("write wrapper: %w", err)
+	}
+
 	configs := [][2]string{
 		{"user.name", name},
 		{"user.email", email},
 		{"user.signingkey", key_id},
 		{"commit.gpgsign", "true"},
-		{"gpg.program", "gpg"},
+		{"gpg.program", wrapper_script},
 	}
 	for _, kv := range configs {
 		if err := run(dir, "git", "config", kv[0], kv[1]); err != nil {
@@ -267,29 +266,14 @@ func configure_git(dir, name, email, key_id string) error {
 }
 
 // commit_and_push stages the file, creates a signed commit, and pushes.
-// GPG passphrase is supplied via loopback pinentry (no TTY required).
 func commit_and_push(dir, file_path, message, passphrase string) error {
 	if err := run(dir, "git", "add", file_path); err != nil {
 		return fmt.Errorf("git add: %w", err)
 	}
 
-	// Write a temporary gpg-agent.conf that enables loopback pinentry,
-	// so git commit -S can receive the passphrase without a TTY.
-	gnupg_home := os.Getenv("GNUPGHOME")
-	if gnupg_home == "" {
-		home, _ := os.UserHomeDir()
-		gnupg_home = filepath.Join(home, ".gnupg")
-	}
-	agent_conf := filepath.Join(gnupg_home, "gpg-agent.conf")
-	_ = os.WriteFile(agent_conf, []byte("allow-loopback-pinentry\n"), 0o600)
-
-	// Reload the agent so the new config takes effect.
-	_ = exec.Command("gpgconf", "--kill", "gpg-agent").Run()
-
 	cmd := exec.Command("git", "commit", "-S", "-m", message)
 	cmd.Dir = dir
-	cmd.Env = append(os.Environ(), "GPG_TTY=")
-	cmd.Stdin = strings.NewReader(passphrase + "\n")
+	cmd.Env = append(os.Environ(), "GPG_PASSPHRASE="+passphrase)
 
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("git commit: %w\n%s", err, out)
